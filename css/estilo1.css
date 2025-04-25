@@ -1,0 +1,159 @@
+:root {
+    --vino: #722f37;
+    --gris-fuerte: #4a4a4a;
+    --gris-claro: #e0e0e0;
+    --negro: #000000;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--gris-fuerte);
+}
+
+/*
+colores
+*/
+.bg-vino {
+    background-color: var(--vino) !important;
+}
+
+.text-vino {
+    color: var(--vino) !important;
+}
+
+.btn-vino {
+    background-color: var(--vino);
+    color: white;
+    border: none;
+}
+
+.btn-vino:hover {
+    background-color: #5a252c;
+    color: white;
+}
+
+.btn-outline-vino {
+    border-color: var(--vino);
+    color: var(--vino);
+}
+
+.btn-outline-vino:hover {
+    background-color: var(--vino);
+    color: white;
+}
+
+/*
+navbar
+*/
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/*
+hero section
+*/
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/camara.webp');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+}
+
+/*
+cards
+*/
+.product-card, .service-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-card:hover, .service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.product-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+/*
+login
+*/
+.login-section {
+    background-color: var(--gris-claro);
+    min-height: calc(100vh - 120px);
+}
+
+/*
+admin estilos
+*/
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 250px;
+    position: fixed;
+    height: 100%;
+}
+
+.admin-main {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+}
+
+.admin-topbar {
+    height: 60px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-content {
+    margin-top: 60px;
+    min-height: calc(100vh - 60px);
+    background-color: #f8f9fa;
+}
+
+.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/*
+badges
+*/
+.badge {
+    padding: 5px 10px;
+    font-weight: normal;
+}
+
+/*
+form 
+*/
+.form-control, .form-select {
+    border: 1px solid var(--gris-claro);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--vino);
+    box-shadow: 0 0 0 0.25rem rgba(114, 47, 55, 0.25);
+}
+
+/*
+responsivoo
+*/
+@media (max-width: 768px) {
+    .admin-sidebar {
+        width: 100%;
+        position: relative;
+        height: auto;
+    }
+    
+    .admin-main {
+        margin-left: 0;
+        width: 100%;
+    }
+}
