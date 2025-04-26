@@ -3,8 +3,8 @@ $(document).ready(function() {
     $('.select-service').click(function(e) {
         e.preventDefault();
         
-        //por ahora no esta logueado
-        const isLoggedIn = false;
+        //por ahora esta logueado
+        const isLoggedIn = true;
         
         if (!isLoggedIn) {
             $('#loginRequiredModal').modal('show');
