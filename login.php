@@ -32,6 +32,8 @@
             echo "Las contraseñas no coinciden";
             exit();
         }
+
+        $password = password_hash($password, PASSWORD_DEFAULT);
     
         $sql = "INSERT INTO cliente (nombre, correo, telefono, password) 
                 VALUES ('$nombre', '$correo', '$telefono', '$password')";
