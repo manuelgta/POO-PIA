@@ -143,6 +143,33 @@ form
 }
 
 /*
+Boton para mostrar el password
+*/
+.password-wrapper input {
+    padding-right: 40px; /* Espacio para el botón */
+    user-select: none; /* Evita selección de texto */
+    pointer-events: auto; /* Permite escribir pero no seleccionar */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.password-wrapper .toggle-password {
+    position: absolute;
+    right: 52%;
+    top: 81%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.password-wrapper .toggle-password i {
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+/*
 responsivoo
 */
 @media (max-width: 768px) {

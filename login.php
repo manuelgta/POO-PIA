@@ -1,48 +1,91 @@
 <?php
-    include 'db.php';
+    session_start();
+    include 'includes/require_db.php';
+    // include 'php/createLog.php';
 
     if (isset($_POST['login'])) {
-        $correo = $_POST['correo'];
-        $password = $_POST['password'];
+        $correo = $_POST['correo'] ?? NULL; // Comprobar que si existe $_POST['correo'], de lo contrario $correo sera igual a NULL
+        $password = $_POST['password'] ?? NULL;
 
-        $sql = "SELECT * FROM cliente WHERE correo = '$correo'";
-        $resultado = mysqli_query($enlace, $sql);
-        $usuario = mysqli_fetch_assoc($resultado);
+        $enlace->begin_transaction();
 
-        if ($usuario) {
-            if (password_verify($password, $usuario['password'])) {
-                header('location: servicios.php');
-                exit();
-            } else {
-                echo "Contraseña incorrecta";
+        try {
+
+            if(is_null($correo) || is_null($password)) { // Comprobar que ambas variables existen
+                throw new Exception("¡Algo salio mal!", -1); // Cancelar todo el proceso
             }
-        } else {
-            echo "Correo no registrado";
+
+            $stmt = $enlace->prepare("SELECT * FROM cliente WHERE correo = ?");
+            $stmt->bind_param("s", $correo);
+            $stmt->execute();
+
+            $usuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC); // Conseguir todo en un array asociativo
+
+            if (count($usuario) < 1) {
+                throw new Exception("¡El correo no existe o la contraseña es incorrecta!", -2);
+            }
+
+            $usuario = $usuario[0];
+
+            if (!password_verify($password, $usuario['password'])) {
+                throw new Exception("¡El correo no existe o la contraseña es incorrecta!", -2);
+            }
+            
+            $enlace->commit(); // Guardar todos los cambios hechos
+            $_SESSION['success'] = "¡Has iniciado sesión correctamente!"; // Mensaje de exito que aparece en navbar.php
+            $_SESSION['datosUsuario'] = [
+                "id" => $usuario["id"],
+                "nombre" => $usuario["nombre"],
+                "correo" => $usuario["correo"]
+            ];
+            header('location: servicios.php');
+            exit();
+        } catch (Exception $e) {
+            $_SESSION['error'] = "Error {$e->getCode()}: {$e->getMessage()}"; // Mensaje de error junto con el codigo
+            if ($e->getCode() == -1) $_SESSION['error'] = "Mensaje custom por error custom"; // Para leer codigos de error custom
+            $enlace->rollback(); // Deshacer cambios hechos en la base de datos en caso de error
         }
     }
 
     if(isset($_POST['signin'])) {
-        $nombre = $_POST['nombre'];
-        $correo = $_POST['correo'];
-        $telefono = $_POST['telefono'];
-        $password = $_POST['password'];
-        $confirmar = $_POST['confirmar'];
-    
-        if ($password !== $confirmar) {
-            echo "Las contraseñas no coinciden";
-            exit();
-        }
+        $nombre = $_POST['nombre'] ?? NULL;
+        $correo = $_POST['correo'] ?? NULL;
+        $telefono = $_POST['telefono'] ?? NULL;
+        $password = $_POST['password'] ?? NULL;
+        $confirmar = $_POST['confirmar'] ?? NULL;
 
-        $password = password_hash($password, PASSWORD_DEFAULT);
-    
-        $sql = "INSERT INTO cliente (nombre, correo, telefono, password) 
-                VALUES ('$nombre', '$correo', '$telefono', '$password')";
-    
-        if (mysqli_query($enlace, $sql)) {
-            echo "ok"; 
-        } else {
-            echo "error";
+        
+        $enlace->begin_transaction(); // Para tratar multiples ejecuciones a la base de datos
+
+        try {
+
+            if (in_array(NULL, [$nombre, $correo, $telefono, $password, $confirmar], true)) {
+                throw new Exception("¡Algo salio mal!", -1);
+            }
+
+            if($password !== $confirmar) {
+                throw new Exception("¡Las contraseñas no coinciden!", -2); // Mandar a catch
+            }
+
+            $password = password_hash($password, PASSWORD_DEFAULT);
+            
+            $stmt = $enlace->prepare("INSERT INTO cliente (nombre, correo, telefono, password)
+                    VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("ssss", $nombre, $correo, $telefono, $password);
+            $stmt->execute();
+
+            $enlace->commit(); // Guardar todos los cambios hechos
+            $_SESSION['success'] = "¡Te has registrado exitosamente! Prueba iniciar sesión."; // Mensaje de exito que aparece en navbar.php
+        } catch (Exception $e) {
+            $_SESSION['error'] = "Error {$e->getCode()}: {$e->getMessage()}"; // Mensaje de error junto con el codigo
+            $enlace->rollback(); // Deshacer cambios hechos en la base de datos en caso de error
         }
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') { // Redirigir cuando se realize un POST
+        $url = basename($_SERVER['PHP_SELF']); // Redirigir a la misma pagina
+        header("location: $url");
+        exit();
     }
 
 ?>
@@ -52,8 +95,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CIYSE - Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/estilo1.css">
+    <?php include 'includes/head_includes.php'; ?>
 </head>
 <body>
     <header>
@@ -111,13 +153,22 @@
                                             <label for="signupPhone" class="form-label">Teléfono</label>
                                             <input type="tel" name="telefono" class="form-control" id="signupPhone" required>
                                         </div>
-                                        <div class="mb-3">
-                                            <label for="signupPassword" class="form-label">Contraseña</label>
-                                            <input type="password" name="password" class="form-control" id="signupPassword" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="signupConfirmPassword" class="form-label">Confirmar Contraseña</label>
-                                            <input type="password" name="confirmar" class="form-control" id="signupConfirmPassword" required>
+                                        <div class="row">
+                                            <small id="passError" class="text-danger"></small>
+                                            <div class="col-6 mb-3">
+                                                <label for="signupPassword" class="form-label">Contraseña</label>
+                                                <div class="password-wrapper">
+                                                    <input type="password" name="password" class="form-control" id="signupPassword" required
+                                                    oncopy="return false" oncut="return false" onpaste="return false">
+                                                    <button class="toggle-password" type="button" id="togglePass">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <label for="signupConfirmPassword" class="form-label">Confirmar Contraseña</label>
+                                                <input type="password" name="confirmar" class="form-control" id="signupConfirmPassword" required>
+                                            </div>
                                         </div>
                                         <button type="submit" name="signin" class="btn btn-vino w-100">Registrarse</button>
                                     </form>
@@ -145,8 +196,49 @@
         </div>
     </footer>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="javascript/script1.js"></script>
+    <?php include 'includes/body_includes.php'; ?>
+    <script>
+        $(document).ready(function () {
+            $('#signupConfirmPassword').on('input', function () { // Comprobar que las contraseñas coincidan
+                let pass = $('#signupPassword').val();
+                let confirmPass = $(this).val();
+                let errorText = $('#passError');
+
+                if (pass !== confirmPass && confirmPass != '') {
+                    $(errorText).text("Las contraseñas no coinciden");
+                } else {
+                    $(errorText).text("");
+                }
+            });
+
+            $('#togglePass').on('click', function () { // Boton para mostrar la contraseña
+                let passwordInput = $('#signupPassword');
+                let icon = $('.toggle-password i');
+
+                if ($(passwordInput).attr('type') === "password") {
+                    $(passwordInput).attr('type', 'text');
+                    $(icon).removeClass("bi-eye")
+                           .addClass("bi-eye-slash");
+                } else {
+                    $(passwordInput).attr('type', 'password');
+                    $(icon).removeClass("bi-eye-slash")
+                           .addClass("bi-eye");
+                }
+            });
+
+            $('#signupForm').on('submit', function (event) { // Funcion para evitar enviar si las contraseñas no coinciden
+                let pass = $('#signupPassword').val();
+                let confirmPass = $("#signupConfirmPassword").val();
+                let errorText = $("#passError");
+
+                if (pass !== confirmPass) {
+                    $(errorText).text("Las contraseñas no coinciden");
+                    event.preventDefault(); // Evita el envío del formulario
+                } else {
+                    $(errorText).text("");
+                }
+            });
+        });
+    </script>
 </body>
 </html>

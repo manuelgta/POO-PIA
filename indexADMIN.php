@@ -1,11 +1,14 @@
+<?php
+    session_start();
+    include 'includes/require_db.php';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CIYSE - Panel de Administración</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/estilo1.css">
+    <?php include 'includes/head_includes.php'; ?>
 </head>
 <body>
     <header>
@@ -113,9 +116,7 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <script src="javascript/script1.js"></script>
+    <?php include 'includes/body_includes.php'; ?>
 </body>
 </html>

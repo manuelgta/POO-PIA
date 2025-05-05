@@ -10,7 +10,7 @@
 <body>
     <header>
         <?php
-            include 'includes/navbar.php';
+            include 'includes/admin_navbar.php';
         ?>
     </header>
 

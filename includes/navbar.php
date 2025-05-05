@@ -1,7 +1,7 @@
 <?php
     // Funcion para ponerle la clase Active a la pagina de la navbar actual
     $currentURL = basename($_SERVER['PHP_SELF']);
-    $urlData = [
+    $urlData = [ // Se pueden agregar mas páginas a la navbar usando este array asociativo
         [
             "url" => "index.php",
             "active" => "",
@@ -21,7 +21,12 @@
             "url" => "login.php",
             "active" => "",
             "title" => "Iniciar Sesión"
-        ]
+        ] /* ,
+        [
+            "url" => "ejemplo.php",
+            "active" => "",
+            "title" => "Titulo de ejemplo"
+        ] */
     ];
 
     $urls = array_column($urlData, "url");
@@ -51,3 +56,18 @@
         </div>
     </div>
 </nav>
+<?php
+    if (isset($_SESSION['error'])) { // Mensajes de error
+        echo "
+        <div class='alert alert-danger alert-dismissible fade show m-5 auto-dismiss' role='alert' style='position: fixed; z-index: 10000;'>
+            <strong>{$_SESSION['error']}</strong>
+        </div>";
+        unset($_SESSION['error']);
+    } if (isset($_SESSION['success'])) { // Mensajes de exito
+        echo "
+        <div class='alert alert-success alert-dismissible fade show m-5 auto-dismiss' role='alert' style='position: fixed; z-index: 10000;'>
+            <strong>{$_SESSION['success']}</strong>
+        </div>";
+        unset($_SESSION['success']);
+    }
+?>
