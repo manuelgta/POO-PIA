@@ -55,43 +55,44 @@
                             <div class="tab-content">
                                 <!-- login cliente -->
                                 <div class="tab-pane fade show active" id="login">
-                                    <form id="loginForm">
+                                    <form id="loginForm" name="poo_project" method="post">
                                         <div class="mb-3">
                                             <label for="loginEmail" class="form-label">Correo Electrónico</label>
-                                            <input type="email" class="form-control" id="loginEmail" required>
+                                            <input type="email" name="correo" class="form-control" id="loginEmail" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="loginPassword" class="form-label">Contraseña</label>
-                                            <input type="password" class="form-control" id="loginPassword" required>
+                                            <input type="password" name="password" class="form-control" id="loginPassword" required>
                                         </div>
-                                        <button type="submit" class="btn btn-vino w-100">Iniciar Sesión</button>
+                                        <button type="submit" value="Iniciar Sesion" class="btn btn-vino w-100">Iniciar Sesión</button>
+                                        <div id="loginError" style="display:none; color:red;"></div>
                                     </form>
                                 </div>
                                 
                                 <!-- signup cliente -->
                                 <div class="tab-pane fade" id="signup">
-                                    <form id="signupForm">
+                                    <form id="signupForm" name="poo_project" method="post">
                                         <div class="mb-3">
                                             <label for="signupName" class="form-label">Nombre Completo</label>
-                                            <input type="text" class="form-control" id="signupName" required>
+                                            <input type="text" name="nombre" class="form-control" id="signupName" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="signupEmail" class="form-label">Correo Electrónico</label>
-                                            <input type="email" class="form-control" id="signupEmail" required>
+                                            <input type="email" name="correo" class="form-control" id="signupEmail" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="signupPhone" class="form-label">Teléfono</label>
-                                            <input type="tel" class="form-control" id="signupPhone" required>
+                                            <input type="tel" name="telefono" class="form-control" id="signupPhone" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="signupPassword" class="form-label">Contraseña</label>
-                                            <input type="password" class="form-control" id="signupPassword" required>
+                                            <input type="password" name="password" class="form-control" id="signupPassword" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="signupConfirmPassword" class="form-label">Confirmar Contraseña</label>
-                                            <input type="password" class="form-control" id="signupConfirmPassword" required>
+                                            <input type="password" name="confirmar" class="form-control" id="signupConfirmPassword" required>
                                         </div>
-                                        <button type="submit" class="btn btn-vino w-100">Registrarse</button>
+                                        <button type="submit" name="registro" class="btn btn-vino w-100">Registrarse</button>
                                     </form>
                                 </div>
                                 
