@@ -1,4 +1,6 @@
 <?php
+    include 'db.php';
+
     if (isset($_POST['login'])) {
         $correo = $_POST['correo'];
         $password = $_POST['password'];
@@ -9,7 +11,8 @@
 
         if ($usuario) {
             if (password_verify($password, $usuario['password'])) {
-                echo "ok";  
+                header('location: servicios.php');
+                exit();
             } else {
                 echo "Contraseña incorrecta";
             }

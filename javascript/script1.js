@@ -23,59 +23,59 @@ $(document).ready(function() {
         $('#confirmationModal').modal('show');
     });
     
-    //manejar formulario de login
-    $('#loginForm').submit(function(e) {
-        e.preventDefault(); 
+    // //manejar formulario de login
+    // $('#loginForm').submit(function(e) {
+    //     e.preventDefault(); 
     
-        const correo = $('#loginEmail').val();
-        const password = $('#loginPassword').val();
+    //     const correo = $('#loginEmail').val();
+    //     const password = $('#loginPassword').val();
 
-        const formData = new FormData();
-        formData.append('correo', correo);
-        formData.append('password', password);
+    //     const formData = new FormData();
+    //     formData.append('correo', correo);
+    //     formData.append('password', password);
     
-        $.ajax({
-            url: 'login.php',  
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                if (response.trim() === 'ok') {
-                    sessionStorage.setItem('isLoggedIn', 'true');
-                    window.location.href = 'servicios.html';
-                } else {
-                    $('#loginError').text(response); 
-                    $('#loginError').css('color', 'red'); 
-                    $('#loginError').show();
-                }
-            },
-            error: function() {
-                $('#loginError').text('Hubo un error al procesar la solicitud.');
-            }
-        });
-    });
+    //     $.ajax({
+    //         url: 'login.php',  
+    //         type: 'POST',
+    //         data: formData,
+    //         processData: false,
+    //         contentType: false,
+    //         success: function(response) {
+    //             if (response.trim() === 'ok') {
+    //                 sessionStorage.setItem('isLoggedIn', 'true');
+    //                 window.location.href = 'servicios.html';
+    //             } else {
+    //                 $('#loginError').text(response); 
+    //                 $('#loginError').css('color', 'red'); 
+    //                 $('#loginError').show();
+    //             }
+    //         },
+    //         error: function() {
+    //             $('#loginError').text('Hubo un error al procesar la solicitud.');
+    //         }
+    //     });
+    // });
     
-    //manejar formulario de registro
-    $('#signupForm').submit(function(e) {
-        e.preventDefault(); 
+    // //manejar formulario de registro
+    // $('#signupForm').submit(function(e) {
+    //     e.preventDefault(); 
 
-        $.ajax({
-        url: 'register.php',
-        type: 'POST',
-        data: $(this).serialize(),
-        success: function(respuesta) {
-            if (respuesta.trim() === "ok") {
-                window.location.href = 'servicios.html'; 
-            } else {
-                alert("Error al registrar. Inténtalo de nuevo.");
-            }
-        },
-        error: function() {
-            alert("Error de conexión con el servidor.");
-        }
-    });
-    });
+    //     $.ajax({
+    //     url: 'register.php',
+    //     type: 'POST',
+    //     data: $(this).serialize(),
+    //     success: function(respuesta) {
+    //         if (respuesta.trim() === "ok") {
+    //             window.location.href = 'servicios.html'; 
+    //         } else {
+    //             alert("Error al registrar. Inténtalo de nuevo.");
+    //         }
+    //     },
+    //     error: function() {
+    //         alert("Error de conexión con el servidor.");
+    //     }
+    // });
+    // });
     
     //manejar formulario de login de administrador
     $('#adminLoginForm').submit(function(e) {
