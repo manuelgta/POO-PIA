@@ -95,7 +95,7 @@ $(document).ready(function() {
     }
     
     //página de productos a servicios
-    if (window.location.pathname.includes('productos.html') && sessionStorage.getItem('selectedService')) {
+    if (window.location.pathname.includes('productos.php') && sessionStorage.getItem('selectedService')) {
         $('.product-card').click(function() {
             const productName = $(this).find('.card-title').text();
             sessionStorage.setItem('selectedProduct', productName);
@@ -107,7 +107,7 @@ $(document).ready(function() {
     if (window.location.pathname.includes('admin/')) {
         const isAdmin = sessionStorage.getItem('isAdmin');
         if (!isAdmin) {
-            window.location.href = '../login.html';
+            window.location.href = '../login.php';
         }
     }
 });
