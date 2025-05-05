@@ -13,7 +13,7 @@ $(document).ready(function() {
             //guardar el tipo de servicio en sessionstorage
             sessionStorage.setItem('selectedService', serviceType);
             //redirigir a la página de productos para seleccionar uno
-            window.location.href = 'productos.html';
+            window.location.href = 'productos.php';
         }
     });
     
@@ -82,11 +82,11 @@ $(document).ready(function() {
         e.preventDefault();
         //simulacion de login exitoso
         sessionStorage.setItem('isAdmin', 'true');
-        window.location.href = 'admin/index.html';
+        window.location.href = 'admin/index.php';
     });
     
     //cargar datos de servicio y producto
-    if (window.location.pathname.includes('agendar.html')) {
+    if (window.location.pathname.includes('agendar.php')) {
         const serviceType = sessionStorage.getItem('selectedService');
         const selectedProduct = sessionStorage.getItem('selectedProduct');
         
@@ -99,7 +99,7 @@ $(document).ready(function() {
         $('.product-card').click(function() {
             const productName = $(this).find('.card-title').text();
             sessionStorage.setItem('selectedProduct', productName);
-            window.location.href = 'agendar.html';
+            window.location.href = 'agendar.php';
         });
     }
     
