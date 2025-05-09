@@ -4,19 +4,19 @@
     // include 'php/createLog.php';
 
     if (isset($_POST['login'])) {
-        $correo = $_POST['correo'] ?? NULL; // Comprobar que si existe $_POST['correo'], de lo contrario $correo sera igual a NULL
-        $password = $_POST['password'] ?? NULL;
+        $userMail = $_POST['correo'] ?? NULL; // Comprobar que si existe $_POST['correo'], de lo contrario $correo sera igual a NULL
+        $userPass = $_POST['password'] ?? NULL;
 
         $enlace->begin_transaction();
 
         try {
 
-            if(is_null($correo) || is_null($password)) { // Comprobar que ambas variables existen
+            if(is_null($userMail) || is_null($userPass)) { // Comprobar que ambas variables existen
                 throw new Exception("¡Algo salio mal!", -1); // Cancelar todo el proceso
             }
 
-            $stmt = $enlace->prepare("SELECT * FROM cliente WHERE correo = ?");
-            $stmt->bind_param("s", $correo);
+            $stmt = $enlace->prepare("SELECT * FROM users WHERE userMail = ?");
+            $stmt->bind_param("s", $userMail);
             $stmt->execute();
 
             $usuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC); // Conseguir todo en un array asociativo
@@ -27,16 +27,16 @@
 
             $usuario = $usuario[0];
 
-            if (!password_verify($password, $usuario['password'])) {
+            if (!password_verify($userPass, $usuario['userPass'])) {
                 throw new Exception("¡El correo no existe o la contraseña es incorrecta!", -2);
             }
             
             $enlace->commit(); // Guardar todos los cambios hechos
             $_SESSION['success'] = "¡Has iniciado sesión correctamente!"; // Mensaje de exito que aparece en navbar.php
-            $_SESSION['datosUsuario'] = [
-                "id" => $usuario["id"],
-                "nombre" => $usuario["nombre"],
-                "correo" => $usuario["correo"]
+            $_SESSION['user'] = [
+                "id" => $usuario["userId"],
+                "name" => $usuario["userName"],
+                "mail" => $usuario["userMail"]
             ];
             header('location: servicios.php');
             exit();
@@ -48,30 +48,31 @@
     }
 
     if(isset($_POST['signin'])) {
-        $nombre = $_POST['nombre'] ?? NULL;
-        $correo = $_POST['correo'] ?? NULL;
-        $telefono = $_POST['telefono'] ?? NULL;
-        $password = $_POST['password'] ?? NULL;
+        $userName = $_POST['nombre'] ?? NULL;
+        $userMail = $_POST['correo'] ?? NULL;
+        $userPhone = $_POST['telefono'] ?? NULL;
+        $userPass = $_POST['password'] ?? NULL;
         $confirmar = $_POST['confirmar'] ?? NULL;
 
+        $roleId = 2; // Id del rol de cliente
         
         $enlace->begin_transaction(); // Para tratar multiples ejecuciones a la base de datos
 
         try {
 
-            if (in_array(NULL, [$nombre, $correo, $telefono, $password, $confirmar], true)) {
+            if (in_array(NULL, [$userName, $userMail, $userPhone, $userPass, $confirmar], true)) {
                 throw new Exception("¡Algo salio mal!", -1);
             }
 
-            if($password !== $confirmar) {
+            if($userPass !== $confirmar) {
                 throw new Exception("¡Las contraseñas no coinciden!", -2); // Mandar a catch
             }
 
-            $password = password_hash($password, PASSWORD_DEFAULT);
+            $userPass = password_hash($userPass, PASSWORD_DEFAULT);
             
-            $stmt = $enlace->prepare("INSERT INTO cliente (nombre, correo, telefono, password)
-                    VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("ssss", $nombre, $correo, $telefono, $password);
+            $stmt = $enlace->prepare("INSERT INTO users (roleId, userName, userMail, userPhone, userPass)
+                    VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("issis", $roleId, $userName, $userMail, $userPhone, $userPass);
             $stmt->execute();
 
             $enlace->commit(); // Guardar todos los cambios hechos
