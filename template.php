@@ -1,7 +1,8 @@
 <?php
     session_start();
     include 'includes/require_db.php';
-    // include 'php/createLog.php';
+    include 'includes/ulrRestrictions.php';
+    include 'php/createLog.php';
 
     if (isset($_POST['customAction'])) {
 
@@ -48,7 +49,7 @@
     <title>CIYSE - Titulo</title>
     <?php include 'includes/head_includes.php'; ?>
 </head>
-<body data-bs-theme='<?= $_SESSION['theme'] ?? 'light'; ?>'>
+<body>
     <header>
         <?php
             include 'includes/navbar.php';

@@ -1,7 +1,22 @@
 <?php
     session_start();
     include 'includes/require_db.php';
-    // include 'php/createLog.php';
+    include 'includes/urlRestrictions.php';
+
+    $stmt = $enlace->prepare("SELECT * FROM products
+            WHERE isDeleted = 0");
+    $stmt->execute();
+    $allProducts = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    
+    $products = [];
+    $unavailableProducts = [];
+    foreach ($allProducts as $product) {
+        if ($product['productStock'] > 0) {
+            $products[] = $product;
+        } else {
+            $unavailableProducts[] = $product;
+        }
+    }
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -22,39 +37,24 @@
         <div class="container">
             <h1 class="text-center mb-5">Nuestros Productos</h1>
             
-            <div class="row">
-                <!-- producto1 -->
-                <div class="col-md-4 mb-4">
-                    <div class="card product-card h-100">
-                        <img src="img/producto1.jpg" class="card-img-top" alt="Cámara de seguridad">
-                        <div class="card-body">
-                            <h5 class="card-title">Cámara HD 1080p</h5>
-                            <p class="card-text">Cámara de seguridad con resolución Full HD 1080p, visión nocturna y resistencia a la intemperie.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- producto2 -->
-                <div class="col-md-4 mb-4">
-                    <div class="card product-card h-100">
-                        <img src="img/producto2.jpg" class="card-img-top" alt="DVR">
-                        <div class="card-body">
-                            <h5 class="card-title">Grabador Digital 4 Canales</h5>
-                            <p class="card-text">Sistema de grabación digital para 4 cámaras con almacenamiento de hasta 2TB.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- producto3 -->
-                <div class="col-md-4 mb-4">
-                    <div class="card product-card h-100">
-                        <img src="img/producto3.jpg" class="card-img-top" alt="Kit de seguridad">
-                        <div class="card-body">
-                            <h5 class="card-title">Kit de Seguridad Básico</h5>
-                            <p class="card-text">Kit completo con 4 cámaras, grabador digital y todos los accesorios necesarios para instalación.</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="row d-flex justify-content-center">
+                <?php
+                    if (empty($products)) {
+                        echo "<h2 class='text-center'>¡No hay productos disponibles!</h2>";
+                    } else foreach ($products as $product) {
+                        $product['productImgPath'] = $product['productImgPath'] ?? "img/product_placeholder.png";
+                        echo "
+                        <div class='col-md-4 mb-4'>
+                            <div class='card h-100' data-session='producto'>
+                                <img src='{$product['productImgPath']}' class='card-img-top' alt='Producto'>
+                                <div class='card-body'>
+                                    <h5 class='card-title'>{$product['productName']}</h5>
+                                    <p class='card-text'>{$product['productDescription']}</p>
+                                </div>
+                            </div>
+                        </div>";
+                    }
+                ?>
                 
                 <!-- rrellenar mas -->
             </div>

@@ -1,39 +1,3 @@
-<?php
-    // Funcion para ponerle la clase Active a la pagina de la navbar actual
-    $currentURL = basename($_SERVER['PHP_SELF']);
-    $urlData = [ // Se pueden agregar mas páginas a la navbar usando este array asociativo
-        [
-            "url" => "indexADMIN.php",
-            "active" => "",
-            "title" => "<i class='bi bi-speedometer me-2'></i>Dashboard"
-        ],
-        [
-            "url" => "productosADMIN.php",
-            "active" => "",
-            "title" => "<i class='bi bi-dropbox me-2'></i>Productos"
-        ],
-        [
-            "url" => "solicitudesADMIN.php",
-            "active" => "",
-            "title" => "<i class='bi bi-clipboard-check me-2'></i>Solicitudes"
-        ],
-        [
-            "url" => "index.php",
-            "active" => "",
-            "title" => "<i class='bi bi-door-open me-2'></i>Salir"
-        ] /* ,
-        [
-            "url" => "ejemplo.php",
-            "active" => "",
-            "title" => "Titulo de ejemplo"
-        ] */
-    ];
-
-    $urls = array_column($urlData, "url");
-    foreach ($urls as $key => $url) {
-        if ($currentURL == $url) $urlData[$key]["active"] = "active";
-    }
-?>
 <nav class="admin-sidebar bg-dark">
     <div class="sidebar-header text-center py-4">
         <img src="img/logo sin fondo.png" alt="CIYSE Logo" height="40">
@@ -41,10 +5,17 @@
     </div>
     <ul class="nav flex-column">
         <?php
-            foreach ($urlData as $url) {
+            foreach ($urlData as $row) {
+                $currentURL = basename($_SERVER['PHP_SELF']);
+                $active = '';
+                $link = $row['urlAddress'];
+                if ($currentURL == $link) $active = 'active';
+
                 echo "
                 <li class='nav-item'>
-                    <a class='nav-link {$url['active']}' href='{$url['url']}'>{$url['title']}</a>
+                    <a class='nav-link $active' href='$link'>
+                        <i class='bi bi-{$row['iconBi']}'></i> {$row['urlTitle']}
+                    </a>
                 </li>";
             }
         ?>
@@ -65,3 +36,24 @@
         unset($_SESSION['success']);
     }
 ?>
+<!-- <?php
+    function printStuff($parentKey, $array) {
+        if (is_array($array)) {
+            ksort($array); // Ordenar por clave A-Z
+            $i = 0;
+            $length = count($array);
+            echo "$parentKey: [";
+            foreach ($array as $key => $col) {
+                $i++;
+                printStuff($key, $col);
+                if ($i != $length) echo ", ";
+            }
+            echo "] /";
+        } else {
+            echo "$parentKey: $array";
+        }
+    }
+    
+        printStuff('SESSION', $_SESSION);
+        echo ". ";
+?> -->

@@ -1,6 +1,7 @@
 <?php
     session_start();
     include 'includes/require_db.php';
+    include 'includes/urlRestrictions.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -22,7 +23,7 @@
             <nav class="admin-topbar navbar navbar-expand navbar-light bg-light">
                 <div class="container-fluid">
                     <button class="btn btn-sm btn-vino ms-auto">
-                        <i class="fas fa-user-circle me-2"></i>Administrador
+                        <i class="bi bi-person-circle me-2"></i>Administrador
                     </button>
                 </div>
             </nav>
@@ -116,7 +117,6 @@
         </div>
     </div>
 
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <?php include 'includes/body_includes.php'; ?>
 </body>
 </html>

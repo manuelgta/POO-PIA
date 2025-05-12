@@ -1,8 +1,8 @@
 <?php
     session_start();
 
-    function failed() {
-        echo json_encode(["success" => false, "message" => "No se recibió el valor"]);
+    function failed($message = "No se recibio el valor") {
+        echo json_encode(["error" => true, "message" => "$message"]);
         exit;
     }
 

@@ -1,7 +1,8 @@
 <?php
     session_start();
     include 'includes/require_db.php';
-    // include 'php/createLog.php';
+    include 'includes/urlRestrictions.php';
+    include 'php/createLog.php';
 
     if (isset($_POST['login'])) {
         $userMail = $_POST['correo'] ?? NULL; // Comprobar que si existe $_POST['correo'], de lo contrario $correo sera igual a NULL
@@ -36,13 +37,18 @@
             $_SESSION['user'] = [
                 "id" => $usuario["userId"],
                 "name" => $usuario["userName"],
-                "mail" => $usuario["userMail"]
+                "mail" => $usuario["userMail"],
+                "role" => $usuario['roleId']
             ];
-            header('location: servicios.php');
+            unset($_SESSION['urls']);
+            if (isset($_SESSION['login']['serviceRedirect'])) {
+                header('location: servicios.php');
+            } else {
+                header('location: index.php');
+            }
             exit();
         } catch (Exception $e) {
             $_SESSION['error'] = "Error {$e->getCode()}: {$e->getMessage()}"; // Mensaje de error junto con el codigo
-            if ($e->getCode() == -1) $_SESSION['error'] = "Mensaje custom por error custom"; // Para leer codigos de error custom
             $enlace->rollback(); // Deshacer cambios hechos en la base de datos en caso de error
         }
     }
@@ -74,6 +80,11 @@
                     VALUES (?, ?, ?, ?, ?)");
             $stmt->bind_param("issis", $roleId, $userName, $userMail, $userPhone, $userPass);
             $stmt->execute();
+            $regId = $enlace->insert_id;
+
+            if (!insertLog($enlace, "users", $regId, NULL, $userName)) {
+                throw new Exception("¡Algo salio mal!", -3);
+            }
 
             $enlace->commit(); // Guardar todos los cambios hechos
             $_SESSION['success'] = "¡Te has registrado exitosamente! Prueba iniciar sesión."; // Mensaje de exito que aparece en navbar.php
@@ -118,7 +129,6 @@
                                 <li class="nav-item">
                                     <a class="nav-link" id="signup-tab" data-bs-toggle="tab" href="#signup">Registrarse</a>
                                 </li>
-                            
                             </ul>
                         </div>
                         <div class="card-body">

@@ -1,39 +1,3 @@
-<?php
-    // Funcion para ponerle la clase Active a la pagina de la navbar actual
-    $currentURL = basename($_SERVER['PHP_SELF']);
-    $urlData = [ // Se pueden agregar mas páginas a la navbar usando este array asociativo
-        [
-            "url" => "index.php",
-            "active" => "",
-            "title" => "Inicio"
-        ],
-        [
-            "url" => "productos.php",
-            "active" => "",
-            "title" => "Productos"
-        ],
-        [
-            "url" => "servicios.php",
-            "active" => "",
-            "title" => "Servicios"
-        ],
-        [
-            "url" => "login.php",
-            "active" => "",
-            "title" => "Iniciar Sesión"
-        ] /* ,
-        [
-            "url" => "ejemplo.php",
-            "active" => "",
-            "title" => "Titulo de ejemplo"
-        ] */
-    ];
-
-    $urls = array_column($urlData, "url");
-    foreach ($urls as $key => $url) {
-        if ($currentURL == $url) $urlData[$key]["active"] = "active";
-    }
-?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-vino">
     <div class="container">
         <a class="navbar-brand" href="#">
@@ -45,10 +9,17 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <?php
-                    foreach ($urlData as $url) {
+                    foreach ($urlData as $row) {
+                        $currentURL = basename($_SERVER['PHP_SELF']);
+                        $active = '';
+                        $link = $row['urlAddress'];
+                        if ($currentURL == $link) $active = 'active';
+
                         echo "
                         <li class='nav-item'>
-                            <a class='nav-link {$url['active']}' href='{$url['url']}'>{$url['title']}</a>
+                            <a class='nav-link $active' href='$link'>
+                                {$row['urlTitle']}
+                            </a>
                         </li>";
                     }
                 ?>
@@ -71,3 +42,24 @@
         unset($_SESSION['success']);
     }
 ?>
+<!-- <?php
+    function printStuff($parentKey, $array) {
+        if (is_array($array)) {
+            ksort($array); // Ordenar por clave A-Z
+            $i = 0;
+            $length = count($array);
+            echo "$parentKey: [";
+            foreach ($array as $key => $col) {
+                $i++;
+                printStuff($key, $col);
+                if ($i != $length) echo ", ";
+            }
+            echo "] /";
+        } else {
+            echo "$parentKey: $array";
+        }
+    }
+    
+        printStuff('SESSION', $_SESSION);
+        echo ". ";
+?> -->

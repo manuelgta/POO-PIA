@@ -1,6 +1,7 @@
 <?php
     session_start();
     include 'includes/require_db.php';
+    include 'includes/urlRestrictions.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">

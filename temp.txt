@@ -1,0 +1,2 @@
+Archivo usado para editar multiple texto a la vez usando
+ctrl + F2

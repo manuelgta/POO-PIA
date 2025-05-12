@@ -1,21 +1,21 @@
 $(document).ready(function() {
-    //verificacion de si esta logeado el usuario uwu
-    $('.select-service').click(function(e) {
-        e.preventDefault();
+    // verificacion de si esta logeado el usuario uwu
+    // $('.select-service').click(function(e) {
+    //     e.preventDefault();
         
-        //por ahora esta logueado
-        const isLoggedIn = true;
+    //     //por ahora esta logueado
+    //     const isLoggedIn = true;
         
-        if (!isLoggedIn) {
-            $('#loginRequiredModal').modal('show');
-        } else {
-            const serviceType = $(this).data('service');
-            //guardar el tipo de servicio en sessionstorage
-            sessionStorage.setItem('selectedService', serviceType);
-            //redirigir a la página de productos para seleccionar uno
-            window.location.href = 'productos.php';
-        }
-    });
+    //     if (!isLoggedIn) {
+    //         $('#loginRequiredModal').modal('show');
+    //     } else {
+    //         const serviceType = $(this).data('service');
+    //         //guardar el tipo de servicio en sessionstorage
+    //         sessionStorage.setItem('selectedService', serviceType);
+    //         //redirigir a la página de productos para seleccionar uno
+    //         window.location.href = 'productos.php';
+    //     }
+    // });
     
     //formulario de agendar servicio
     $('#bookingForm').submit(function(e) {
@@ -104,10 +104,10 @@ $(document).ready(function() {
     }
     
     //verificar si el usuario es admin al usar páginas de admin 
-    if (window.location.pathname.includes('admin/')) {
-        const isAdmin = sessionStorage.getItem('isAdmin');
-        if (!isAdmin) {
-            window.location.href = '../login.php';
-        }
-    }
+    // if (window.location.pathname.includes('admin/')) {
+    //     const isAdmin = sessionStorage.getItem('isAdmin');
+    //     if (!isAdmin) {
+    //         window.location.href = '../login.php';
+    //     }
+    // }
 });
