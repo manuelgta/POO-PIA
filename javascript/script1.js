@@ -95,13 +95,13 @@ $(document).ready(function() {
     }
     
     //página de productos a servicios
-    if (window.location.pathname.includes('productos.php') && sessionStorage.getItem('selectedService')) {
-        $('.product-card').click(function() {
-            const productName = $(this).find('.card-title').text();
-            sessionStorage.setItem('selectedProduct', productName);
-            window.location.href = 'agendar.php';
-        });
-    }
+    // if (window.location.pathname.includes('productos.php') && sessionStorage.getItem('selectedService')) {
+    //     $('.product-card').click(function() {
+    //         const productName = $(this).find('.card-title').text();
+    //         sessionStorage.setItem('selectedProduct', productName);
+    //         window.location.href = 'agendar.php';
+    //     });
+    // }
     
     //verificar si el usuario es admin al usar páginas de admin 
     // if (window.location.pathname.includes('admin/')) {

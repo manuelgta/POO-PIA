@@ -56,6 +56,7 @@
     }
 
     if (isset($_POST['productEdit'])) {
+        $productId = $_POST['productId'] ?? NULL;
         $productName = $_POST['productName'] ?? NULL;
         $productStock = $_POST['productStock'] ?? NULL;
         $productDescription = $_POST['productDescription'] ?? NULL;
@@ -100,7 +101,7 @@
             }
             if ($img && $img['error'] === UPLOAD_ERR_OK) {
                 $extension = pathinfo($img['name'], PATHINFO_EXTENSION); // Obtener la extensión del archivo
-                $productImgPath = "uploads/products/product_$regId.$extension"; // Ruta del archivo
+                $productImgPath = "uploads/products/product_$productId.$extension"; // Ruta del archivo
 
                 // Mover la imagen a la carpeta destino
                 if (move_uploaded_file($img['tmp_name'], $productImgPath)) {
@@ -198,7 +199,9 @@
                                 <tbody>
                                     <?php
                                         foreach ($products as $product) {
-                                            $product['productImgPath'] = $product['productImgPath'] ?? "img/product_placeholder.png";
+                                            if (empty($product['productImgPath']) || is_null($product['productImgPath'])) {
+                                                $product['productImgPath'] = "img/product_placeholder.png";
+                                            }
                                             $badgeColor = $product['productStock'] > 0 ? "success" : "danger";
                                             $badgeText = $product['productStock'] > 0 ? "Disponible" : "Agotado";
                                             echo "
@@ -210,48 +213,11 @@
                                                 <td>{$product['productStock']}</td>
                                                 <td><span class='badge bg-$badgeColor'>$badgeText</span></td>
                                                 <td>
-                                                    <button class='btn btn-sm btn-primary me-1'>Editar</button>
-                                                    <button class='btn btn-sm btn-danger me-1'>Eliminar</button>
+                                                    <button type='button' value='{$product['productId']}' class='btn btn-sm btn-primary me-1 productEditButton'>Editar</button>
                                                 </td>
                                             </tr>";
                                         }
                                     ?>
-                                    <tr>
-                                        <td>1</td>
-                                        <td><img src="img/product_placeholder.png" alt="Producto" height="50"></td>
-                                        <td>Cámara HD 1080p</td>
-                                        <td>Cámara de seguridad con resolución Full HD...</td>
-                                        <td>15</td>
-                                        <td><span class="badge bg-success">Disponible</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary me-1">Editar</button>
-                                            <button class="btn btn-sm btn-danger">Eliminar</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td><img src="../../img/producto2.jpg" alt="Producto" height="50"></td>
-                                        <td>Grabador Digital 4 Canales</td>
-                                        <td>Sistema de grabación digital para 4 cámaras...</td>
-                                        <td>8</td>
-                                        <td><span class="badge bg-success">Disponible</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary me-1">Editar</button>
-                                            <button class="btn btn-sm btn-danger">Eliminar</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td><img src="../../img/producto3.jpg" alt="Producto" height="50"></td>
-                                        <td>Kit de Seguridad Básico</td>
-                                        <td>Kit completo con 4 cámaras, grabador...</td>
-                                        <td>0</td>
-                                        <td><span class="badge bg-danger">Agotado</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary me-1">Editar</button>
-                                            <button class="btn btn-sm btn-danger">Eliminar</button>
-                                        </td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -269,7 +235,7 @@
                     <h5 class="modal-title">Agregar Nuevo Producto</h5>
                     <button type="button" class="btn-close bg-light" data-bs-dismiss="modal"></button>
                 </div>
-                <form action="" method="post">
+                <form action="" method="post" enctype="multipart/form-data">
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -280,19 +246,19 @@
                                 <label class="form-label">Stock Inicial</label>
                                 <input type="number" name="productStock" class="form-control" required min="0" step="1">
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Descripción</label>
-                            <textarea class="form-control" name="productDescription" rows="3" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <div class="row">
-                                <div class="col-6">
-                                    <label class="form-label">Imagen del Producto (Opcional)</label>
-                                    <input type="file" class="form-control" name="productImg" id="productImg1" accept="image/*">
-                                </div>
-                                <div class="col-6">
-                                    <img id="preview1" src="" alt="Vista previa" class="img-fluid" style="height: 100; width: auto; display: none;">
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Descripción</label>
+                                <textarea class="form-control" name="productDescription" rows="3" required></textarea>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="form-label">Imagen del Producto (Opcional)</label>
+                                        <input type="file" class="form-control" name="productImg" id="productImg1" accept="image/*">
+                                    </div>
+                                    <div class="col-6">
+                                        <img src="" alt="Vista previa" class="img-fluid" style="height: 100; width: auto; display: none;">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -314,37 +280,41 @@
                     <h5 class="modal-title">Editar un Producto</h5>
                     <button type="button" class="btn-close bg-light" data-bs-dismiss="modal"></button>
                 </div>
-                <form action="" method="post">
+                <form action="" method="post" enctype="multipart/form-data">
                     <div class="modal-body">
                         <div class="row">
+                            <input type="hidden" name="productId" id="productId">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Nombre del Producto</label>
-                                <input type="text" name="productName" class="form-control" required>
+                                <input type="text" name="productName" id="productName" class="form-control" required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Stock Inicial</label>
-                                <input type="number" name="productStock" class="form-control" required min="0" step="1">
+                                <input type="number" name="productStock" id="productStock" class="form-control" required min="0" step="1">
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Descripción</label>
-                            <textarea class="form-control" name="productDescription" rows="3" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <div class="row">
-                                <div class="col-6">
-                                    <label class="form-label">Imagen del Producto (Opcional)</label>
-                                    <input type="file" class="form-control" name="productImg" id="productImg1" accept="image/*">
-                                </div>
-                                <div class="col-6">
-                                    <img id="preview1" src="" alt="Vista previa" class="img-fluid" style="height: 100; width: auto; display: none;">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Descripción</label>
+                                <textarea class="form-control" name="productDescription" id="productDescription" rows="3" required></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <img id="productPreview" src="" alt="Vista previa" class="img-fluid" style="height: 100; width: auto; display: none;">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="form-label">Imagen del Producto (Dejar vacio para no cambiar)</label>
+                                        <input type="file" class="form-control" name="productImg" id="productImg2" accept="image/*">
+                                    </div>
+                                    <div class="col-6">
+                                        <img src="" alt="Vista previa" class="img-fluid" style="height: 100; width: auto; display: none;">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" name="productNew" class="btn btn-vino">Guardar Producto</button>
+                        <button type="submit" name="productEdit" class="btn btn-vino">Guardar Producto</button>
                     </div>
                 </form>
             </div>
@@ -354,9 +324,9 @@
     <?php include 'includes/body_includes.php'; ?>
     <script>
         $(document).ready(function () {
-            $('#productImg1').on('change', function (event) {
+            $('#productImg1, #productImg2').on('change', function (event) {
                 let input = event.target;
-                let preview = $('#preview1');
+                let preview = $(input).closest('.row').find('img');
 
                 if (input.files && input.files[0]) {
                     let reader = new FileReader();
@@ -382,7 +352,7 @@
                         criteria: criteria,
                         data: data,
                         unset: unset,
-                        page: "vehicles"
+                        page: "products"
                     },
                     success: function(response) {
                         if (reload) window.location.reload();
@@ -394,21 +364,28 @@
                 });
             }
 
-            function globalGet (id = $("#vehicleId").val()) {
-                let vehicleId = id; // Obtiene el ID del usuario seleccionado
+            $('.productEditButton').on('click', function () {
+                let productId = $(this).val();
+                globalGet(productId);
+            });
+
+            function globalGet (id = null) {
                 
-                if (vehicleId) {
+                if (id) {
                     $.ajax({
                         url: "globalGet.php", // Reemplaza con la ruta correcta de tu archivo PHP
                         type: "POST",
-                        data: { id: vehicleId, page: "vehicles" },
+                        data: { id: id, page: "products" },
                         dataType: "json",
                         success: function (response) {
-                            let vehicle = response[0];
-                            $("#vehicleModel").val(vehicle.vehicleModel);
-                            $("#vehicleYear").val(vehicle.vehicleYear);
-                            $("#vehicleDescription").val(vehicle.vehicleDescription);
-                            $("#preview2").attr("src", vehicle.vehicleImgPath).show();
+                            let product = response[0];
+                            $("#productId").val(product.productId);
+                            $("#productName").val(product.productName);
+                            $("#productStock").val(product.productStock);
+                            $("#productDescription").val(product.productDescription);
+                            if (product.productImgPath.length > 0)
+                            $("#productPreview").attr("src", product.productImgPath).show();
+                            $('#editProductModal').modal('show');
                         },
                         error: function () {
                             console.error("Error AJAX:", status, error); // <-- Ver error en consola

@@ -32,14 +32,25 @@ colores
     color: white;
 }
 
+.btn-vino:disabled {
+    background-color: #7e3f47;
+    color: white;
+}
+
 .btn-outline-vino {
     border-color: var(--vino);
     color: var(--vino);
 }
 
+
 .btn-outline-vino:hover {
     background-color: var(--vino);
     color: white;
+}
+
+.btn-outline-vino:disabled {
+    border-color: #7e3f47;
+    color: #7e3f47;
 }
 
 /*
@@ -65,7 +76,7 @@ hero section
 cards
 */
 .product-card {
-    cursor: pointer;
+    cursor: default;
 }
 
 .product-card, .service-card {

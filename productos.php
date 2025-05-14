@@ -3,6 +3,8 @@
     include 'includes/require_db.php';
     include 'includes/urlRestrictions.php';
 
+
+
     $stmt = $enlace->prepare("SELECT * FROM products
             WHERE isDeleted = 0");
     $stmt->execute();
@@ -41,21 +43,63 @@
                 <?php
                     if (empty($products)) {
                         echo "<h2 class='text-center'>¡No hay productos disponibles!</h2>";
-                    } else foreach ($products as $product) {
-                        $product['productImgPath'] = $product['productImgPath'] ?? "img/product_placeholder.png";
-                        echo "
-                        <div class='col-md-4 mb-4'>
-                            <div class='card h-100' data-session='producto'>
-                                <img src='{$product['productImgPath']}' class='card-img-top' alt='Producto'>
-                                <div class='card-body'>
-                                    <h5 class='card-title'>{$product['productName']}</h5>
-                                    <p class='card-text'>{$product['productDescription']}</p>
+                    } else {
+                        foreach ($products as $product) {
+                            if (empty($product['productImgPath']) || is_null($product['productImgPath'])) {
+                                $product['productImgPath'] = "img/product_placeholder.png";
+                            }
+                            echo "
+                            <div class='col-lg-3 col-md-4 col-sm-6 mb-4'>
+                                <div class='card h-100 product-card' data-session='producto'>
+                                    <img src='{$product['productImgPath']}' class='card-img-top' alt='Producto'>
+                                    <div class='card-header'>
+                                        Stock: {$product['productStock']}
+                                    </div>
+                                    <div class='card-body'>
+                                        <h5 class='card-title'>{$product['productName']}</h5>
+                                        <p class='card-text'>{$product['productDescription']}</p>
+                                    </div>
+                                    <form method='post'>
+                                        <div class='card-footer d-flex justify-content-center input-group'>
+                                            <button type='submit' class='btn btn-vino btn-sm' name='productBuy' value='{$product['productId']}'>
+                                                <i class='bi bi-cash-stack me-2'></i>Comprar
+                                            </button>
+                                            <button type='submit' class='btn btn-primary btn-sm' name='productAdd' value='{$product['productId']}'>
+                                                <i class='bi bi-cart me-2'></i>Añadir
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
-                            </div>
-                        </div>";
+                            </div>";
+                        }
+                        foreach ($unavailableProducts as $product) {
+                            if (empty($product['productImgPath']) || is_null($product['productImgPath'])) {
+                                $product['productImgPath'] = "img/product_placeholder.png";
+                            }
+                            echo "
+                            <div class='col-lg-3 col-md-4 col-sm-6 mb-4'>
+                                <div class='card h-100 product-card' data-session='producto'>
+                                    <img src='{$product['productImgPath']}' class='card-img-top' alt='Producto'>
+                                    <div class='card-header text-danger'>
+                                        Sin stock
+                                    </div>
+                                    <div class='card-body'>
+                                        <h5 class='card-title'>{$product['productName']}</h5>
+                                        <p class='card-text'>{$product['productDescription']}</p>
+                                    </div>
+                                    <div class='card-footer d-flex justify-content-center input-group'>
+                                        <button type='button' class='btn btn-vino btn-sm' disabled>
+                                            <i class='bi bi-cash-stack me-2'></i>Comprar
+                                        </button>
+                                        <button type='button' class='btn btn-primary btn-sm' disabled>
+                                            <i class='bi bi-cart me-2'></i>Añadir
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>";
+                        }
                     }
                 ?>
-                
                 <!-- rrellenar mas -->
             </div>
         </div>
