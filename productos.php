@@ -3,8 +3,6 @@
     include 'includes/require_db.php';
     include 'includes/urlRestrictions.php';
 
-
-
     $stmt = $enlace->prepare("SELECT * FROM products
             WHERE isDeleted = 0");
     $stmt->execute();
@@ -18,6 +16,71 @@
         } else {
             $unavailableProducts[] = $product;
         }
+    }
+
+    function failedProduct ($code = 0, $message = "¡Algo salio mal!", $showError = true) {
+        if ($showError) $_SESSION['error'] = "Error $code: $message";
+        $url = basename($_SERVER['PHP_SELF']); // Redirigir a la misma pagina
+        header("location: $url");
+        exit();
+    }
+
+    if (isset($_POST['productAdd'])) {
+        $productId = $_POST['productAdd'] ?? NULL;
+        $productIDs = array_column($products, "productId");
+
+        if (!isset($productId)) {
+            failedProduct(-1, "Algo salio mal");
+        }
+
+        $productId = intval($productId);
+        
+        if (!in_array($productId, $productIDs, true)) {
+            failedProduct(-2, "Algo salio mal");
+        }
+
+        if (isset($_SESSION['cart']['items']) && in_array($productId, array_keys($_SESSION['cart']['items']), true)) {
+            $_SESSION['cart']['items'][$productId]++;
+        } else {
+            $_SESSION['cart']['items'][$productId] = 1;
+        }
+
+        $_SESSION['success'] = "¡Producto agregado con éxito!";
+    }
+    
+    if (isset($_POST['productBuy'])) {
+        $productId = $_POST['productBuy'] ?? NULL;
+        $productIDs = array_column($products, "productId");
+
+        if (!isset($productId)) {
+            failedProduct(-1, "Algo salio mal");
+        }
+
+        $productId = intval($productId);
+        
+        if (!in_array($productId, $productIDs, true)) {
+            failedProduct(-2, "Algo salio mal");
+        }
+
+        if (in_array($productId, array_keys($_SESSION['cart']['items']), true)) {
+            $_SESSION['cart']['items'][$productId]++;
+        } else {
+            $_SESSION['cart']['items'][$productId] = 1;
+        }
+
+        if (isset($_SESSION['cart']['service'])) {
+            header("location: agendar.php");
+            exit();
+        } else {
+            $_SESSION['servicios']['appointmentRedirect'] = 1;
+            $_SESSION['success'] = "Por favor, elija un servicio.";
+            header("location: servicios.php");
+            exit();
+        }
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') { // Redirigir cuando se realize un POST
+        failedProduct(0, "si", false);
     }
 ?>
 <!DOCTYPE html>

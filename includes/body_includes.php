@@ -11,5 +11,26 @@
 
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]'); // Tooltips de bootstrap
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+        let timer;
+
+        $('.product-description').hover( // Text-truncate en el carrito de compras
+            function () {
+                const $el = $(this);
+                timer = setTimeout(function () {
+                    $el.removeClass('text-truncate');
+                }, 1000); // 1 segundos
+            },
+            function () {
+                clearTimeout(timer);
+                $(this).addClass('text-truncate');
+            }
+        );
+
+        $('.zoomable-img').on('click', function () { // Zoom para imagenes con esta clase
+            const imgSrc = $(this).attr('src');
+            $('#modalImage').attr('src', imgSrc);
+            $('#imageModal').modal('show');
+        });
     });
 </script>
