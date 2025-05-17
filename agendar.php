@@ -2,6 +2,12 @@
     session_start();
     include 'includes/require_db.php';
     include 'includes/urlRestrictions.php';
+
+    $stmt = $enlace->prepare("SELECT * FROM services
+            WHERE isDeleted = 0");
+    $stmt->execute();
+
+    $services = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -28,29 +34,45 @@
                         </div>
                         <div class="card-body">
                             <form id="bookingForm">
-                                <div class="mb-3">
-                                    <label class="form-label">Tipo de Servicio</label>
-                                    <input type="text" class="form-control" id="serviceType" readonly>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Producto Seleccionado</label>
-                                    <input type="text" class="form-control" id="selectedProduct" readonly>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="bookingDate" class="form-label">Fecha del Servicio</label>
-                                    <input type="date" class="form-control" id="bookingDate" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="bookingTime" class="form-label">Hora del Servicio</label>
-                                    <input type="time" class="form-control" id="bookingTime" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="bookingAddress" class="form-label">Dirección</label>
-                                    <textarea class="form-control" id="bookingAddress" rows="3" required></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="bookingNotes" class="form-label">Notas Adicionales</label>
-                                    <textarea class="form-control" id="bookingNotes" rows="3"></textarea>
+                                <div class="row">
+                                    <div class="col-md-2 mb-3 p-2">
+                                        <a href="servicios.php" class="btn btn-primary">Servicios <i class="bi bi-wrench"></i></a>
+                                    </div>
+                                    <div class="col-md-5 mb-3">
+                                        <label class="form-label">Tipo de Servicio</label>
+                                        <select name="serviceId" class="form-select" data-session="serviceId">
+                                            <option value=""></option>
+                                            <?php
+                                                foreach ($services as $service) {
+                                                    $selected = "";
+                                                    if (isset($_SESSION['appointment']['serviceId']) && $_SESSION['appointment']['serviceId'] == $service['serviceId'])
+                                                        $selected = "selected";
+                                                    echo "
+                                                    <option value='{$service['serviceId']}' $selected>{$service['serviceName']}</option>";
+                                                }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Producto Seleccionado</label>
+                                        <input type="text" class="form-control" id="selectedProduct" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="bookingDate" class="form-label">Fecha</label>
+                                        <input type="date" class="form-control" id="bookingDate" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="bookingTime" class="form-label">Hora del Servicio</label>
+                                        <input type="time" class="form-control" id="bookingTime" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="bookingAddress" class="form-label">Dirección</label>
+                                        <textarea class="form-control" id="bookingAddress" rows="3" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="bookingNotes" class="form-label">Notas Adicionales</label>
+                                        <textarea class="form-control" id="bookingNotes" rows="3"></textarea>
+                                    </div>
                                 </div>
                                 <button type="submit" class="btn btn-vino w-100">Confirmar Servicio</button>
                             </form>
@@ -93,5 +115,35 @@
     </div>
 
     <?php include 'includes/body_includes.php'; ?>
+    <script>
+        $(document).ready(function () {
+            $('[data-session]').on('change', function () {
+                let self = $(this);
+                let criteria = self.attr('data-session');
+                let data = self.val();
+                saveSession(criteria, data);
+            });
+
+            function saveSession (criteria, data, reload = false, unset = false) {
+                $.ajax({
+                    url: "php/globalSetSession.php",
+                    type: "POST",
+                    data: {
+                        criteria: criteria,
+                        data: data,
+                        unset: unset,
+                        page: "appointment"
+                    },
+                    success: function(response) {
+                        if (reload) window.location.reload();
+                    },
+                    error: function(response) {
+                        alert("Error al eliminar el registro");
+                        console.log(response);
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

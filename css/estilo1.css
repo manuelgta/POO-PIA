@@ -192,6 +192,17 @@ Texto comprimido
     max-height: 50px;
 }
 
+.text-truncate.product-description { /* Para la descripcion de productos */
+    cursor: help;
+}
+
+/*
+Imagenes para zoom
+*/
+.zoomable-img {
+    cursor: zoom-in;
+}
+
 /*
 responsivoo
 */

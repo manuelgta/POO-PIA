@@ -5,8 +5,13 @@
 
     if (isset($_SESSION['servicios']['id'])) {
         if (isset($_SESSION['user'])) {
-            $_SESSION['productos']['servicio'] = $_SESSION['servicios']['id'];
-            header('location: productos.php');
+            $_SESSION['cart']['service'] = $_SESSION['servicios']['id'];
+            if (isset($_SESSION['servicios']['appointmentRedirect'])) {
+                header('location: agendar.php');
+            } else {
+                header('location: productos.php');
+            }
+            unset($_SESSION['servicios']);
             exit();
         } else {
             unset($_SESSION['servicios']);
@@ -18,7 +23,7 @@
     }
 
     unset($_SESSION['login']['serviceRedirect']);
-    unset($_SESSION['productos']['servicio']);
+    unset($_SESSION['cart']['service']);
 
     $stmt = $enlace->prepare("SELECT s.*, i.iconBi
             FROM services s

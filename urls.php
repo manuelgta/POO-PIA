@@ -711,23 +711,25 @@
                         url: "globalGet.php",
                         type: "POST",
                         data: {
-                            id: urlId,
+                            id: roleId,
                             page: "urlRoles"
                         },
                         dataType: "json",
                         success: function (response) {
-                            if (response.length > 0) {
-                                $('.url-checkbox').prop('checked', false).trigger('change');
+                            $('.url-checkbox').prop('checked', false);
+                            
+                            if (Array.isArray(response)) {
                                 response.forEach(function(url) {
-                                    $('input[name="url[' + url.urlId + ']"].url-checkbox')
-                                    .prop('checked', true)
-                                    .trigger('change');
+                                    if (url.urlId) {
+                                        $('input[name="url[' + url.urlId + ']"].url-checkbox')
+                                            .prop('checked', true);
+                                    }
                                 });
                             } else {
-                                $('.url-checkbox').prop('checked', false).trigger('change');
+                                console.warn("Respuesta inesperada:", response);
                             }
                         },
-                        error: function () {
+                        error: function (xhr, status, error) {
                             console.error("Error AJAX:", status, error);
                             console.log("Respuesta completa:", xhr.responseText);
                             alert("Error al obtener los grupos.");
