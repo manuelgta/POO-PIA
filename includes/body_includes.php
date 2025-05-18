@@ -32,5 +32,51 @@
             $('#modalImage').attr('src', imgSrc);
             $('#imageModal').modal('show');
         });
+
+        $('[data-cartRemove]').on('click', function () {
+            let self = $(this);
+            let criteria = 'si';
+            let data = self.attr('data-cartRemove');
+            $.ajax({
+                url: "php/globalSetSession.php",
+                type: "POST",
+                data: {
+                    criteria: criteria,
+                    data: data,
+                    unset: "true",
+                    page: "cartRemove"
+                },
+                success: function(response) {
+                    window.location.reload();
+                },
+                error: function(response) {
+                    alert("Error al procesar el evento");
+                    console.log(response);
+                }
+            });
+        });
+
+        $('[data-cartChange]').on('click', function () {
+            let self = $(this);
+            let criteria = self.attr('data-cartChange');
+            let data = self.val();
+            $.ajax({
+                url: "php/globalSetSession.php",
+                type: "POST",
+                data: {
+                    criteria: criteria,
+                    data: data,
+                    unset: "false",
+                    page: "cartChange"
+                },
+                success: function(response) {
+                    
+                },
+                error: function(response) {
+                    alert("Error al procesar el evento");
+                    console.log(response);
+                }
+            });
+        });
     });
 </script>

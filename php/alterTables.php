@@ -14,8 +14,8 @@ if ($enlace->connect_error) {
 }
 
 $sql = "
-ALTER TABLE `urls`
-ADD COLUMN `navbarShow` tinyint(1) NOT NULL DEFAULT 1;
+ALTER TABLE `requests`
+MODIFY `requestComments` TEXT NULL;
 ";
 
 if ($enlace->query($sql) === TRUE) {

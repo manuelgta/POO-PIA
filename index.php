@@ -2,6 +2,15 @@
     session_start();
     include 'includes/require_db.php';
     include 'includes/urlRestrictions.php';
+
+    $stmt = $enlace->prepare("SELECT s.*, i.iconBi
+            FROM services s
+            JOIN icons i ON i.iconId = s.iconId
+            WHERE s.isDeleted = 0
+            ORDER BY s.serviceName DESC");
+    $stmt->execute();
+
+    $services = $stmt->get_result()->fetch_all(MYSQLI_ASSOC); // Lista de servicios disponibles
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -46,6 +55,24 @@
                         <li>Soporte técnico especializado</li>
                     </ul>
                 </div>
+            </div>
+            <h1 class="text-center mb-5">Nuestros Servicios</h1>
+            
+            <div class="row d-flex justify-content-center">
+                <?php
+                    foreach ($services as $service) {
+                        echo "
+                        <div class='col-lg-4 col-md-6 mb-4'>
+                            <div class='card service-card h-100'>
+                                <div class='card-body text-center'>
+                                    <i class='bi bi-{$service['iconBi']} fa-3x mb-3'></i>
+                                    <h3 class='card-title'>{$service['serviceName']}</h3>
+                                    <p class='card-text'>{$service['serviceDescription']}</p>
+                                </div>
+                            </div>
+                        </div>";
+                    }
+                ?>
             </div>
         </div>
     </section>

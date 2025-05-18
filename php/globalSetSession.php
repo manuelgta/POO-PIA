@@ -35,59 +35,23 @@
                 }
             }
         ],
-        'report' => [
+        'cartRemove' => [
             'customHandler' => function () {
-                $criteria = $_POST['criteria'];
                 $data = $_POST['data'] ?? null;
-
-                if (is_array($criteria)) {
-                    if (count($criteria) > 2) {
-                        foreach ($criteria as $key => $value) {
-                            if (isset($data[$key])) {
-                                $_SESSION['report'][$value] = $data[$key];
-                            } else {
-                                unset($_SESSION['report'][$value]);
-                            }
-                        }
-                    } else {
-                        if ($data === null) {
-                            unset($_SESSION['report'][$criteria[0]][$criteria[1]]);
-                        } else {
-                            $_SESSION['report'][$criteria[0]][$criteria[1]] = $data;
-                        }
-                    }
-                } else {
-                    if ($criteria === 'reset') {
-                        unset($_SESSION['report']);
-                    } else {
-                        $_SESSION['report'][$criteria] = $data;
-                    }
-                }
+                
+                unset($_SESSION['cart']['items'][$data]);
 
                 success($data);
             }
         ],
-        'structure' => [
+        'cartChange' => [
             'customHandler' => function () {
-                if (isset($_POST['table'], $_POST['id'], $_POST['old'], $_POST['criteria'])) {
-                    $table = $_POST['table'];
-                    $id = $_POST['id'];
-                    $criteria = $_POST['criteria'];
-                    $tableSLess = substr($table, 0, -1);
+                $criteria = $_POST['criteria'] ?? null;
+                $data = $_POST['data'] ?? null;
+                
+                $_SESSION['cart']['items'][$criteria] = $data;
 
-                    switch ($criteria) {
-                        case 'edit':
-                            $_SESSION['reportStructure'][$table][$id] = $_POST['old'];
-                            break;
-                        case 'revert':
-                            unset($_SESSION['reportStructure'][$table][$id]);
-                            unset($_SESSION[$tableSLess . $id]);
-                            break;
-                    }
-                    success();
-                } else {
-                    failed();
-                }
+                success($data);
             }
         ]
     ];

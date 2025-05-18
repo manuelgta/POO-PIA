@@ -25,14 +25,7 @@
     unset($_SESSION['login']['serviceRedirect']);
     unset($_SESSION['cart']['service']);
 
-    $stmt = $enlace->prepare("SELECT s.*, i.iconBi
-            FROM services s
-            JOIN icons i ON i.iconId = s.iconId
-            WHERE s.isDeleted = 0
-            ORDER BY s.serviceName DESC");
-    $stmt->execute();
-
-    $services = $stmt->get_result()->fetch_all(MYSQLI_ASSOC); // Lista de servicios disponibles
+    
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -51,25 +44,7 @@
 
     <section class="services-section py-5">
         <div class="container">
-            <h1 class="text-center mb-5">Nuestros Servicios</h1>
             
-            <div class="row d-flex justify-content-center">
-                <?php
-                    foreach ($services as $service) {
-                        echo "
-                        <div class='col-lg-4 col-md-6 mb-4'>
-                            <div class='card service-card h-100'>
-                                <div class='card-body text-center'>
-                                    <i class='bi bi-{$service['iconBi']} fa-3x mb-3'></i>
-                                    <h3 class='card-title'>{$service['serviceName']}</h3>
-                                    <p class='card-text'>{$service['serviceDescription']}</p>
-                                    <button type='button' class='btn btn-vino' data-session='id' value='{$service['serviceId']}'>Seleccionar</button>
-                                </div>
-                            </div>
-                        </div>";
-                    }
-                ?>
-            </div>
         </div>
     </section>
 

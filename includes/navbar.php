@@ -8,7 +8,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <?php
-                if (isset($_SESSION['cart']['items']) && count($_SESSION['cart']['items']) > 0) {
+                if (isset($_SESSION['cart']['items']) && count($_SESSION['cart']['items']) > 0 && $currentURL != 'agendar.php') {
             ?>
             <button type="button" class="btn text-white ms-5 position-relative"
                     data-bs-toggle="offcanvas" data-bs-target="#cart" aria-controls="cart">
@@ -82,7 +82,7 @@
         echo ". ";
 ?> -->
 <?php
-    if (isset($_SESSION['cart']['items']) && count($_SESSION['cart']['items']) > 0) {
+    if (isset($_SESSION['cart']['items']) && count($_SESSION['cart']['items']) > 0 && $currentURL != 'agendar.php') {
 ?>
     <div class="offcanvas offcanvas-end" tabindex="-1" id="cart" aria-labelledby="cartLabel">
         <div class="offcanvas-header">
@@ -106,7 +106,7 @@
                 $productKeys = array_column($_SESSION['cart']['items'], "productId");
                 
                 foreach ($productsData as $item) {
-                    if (empty($item['productImgPath'])) {
+                    if (empty($item['productImgPath']) || !file_exists($item['productImgPath'])) {
                         $item['productImgPath'] = "img/product_placeholder.png";
                     }
                     $amount = $_SESSION['cart']['items'][$item['productId']];
@@ -124,18 +124,14 @@
                                     <h5 class='mb-1'>{$item['productName']}</h5>
                                     <p class='mb-1 text-muted text-truncate product-description'>{$item['productDescription']}</p>
                                 </div>
-                                <form method='post' action='delete_item.php'>
-                                    <input type='hidden' name='productId' value='{$item['productId']}'>
-                                    <input type='hidden' name='url' value='{$currentURL}'>
-                                    <button type='submit' class='btn btn-sm btn-outline-danger'>Eliminar</button>
-                                </form>
+                                <button type='button' data-cartRemove='{$item['productId']}' class='btn btn-sm btn-outline-danger'>Eliminar</button>
                             </div>
                             <div class='d-flex justify-content-end mt-2'>
-                                <select name='quantity[{$item['productId']}]' class='form-select form-select-sm w-auto'>
+                                <select data-cartChange='{$item['productId']}' class='form-select form-select-sm w-auto'>
                     ";
 
                     // Selector de cantidad
-                    for ($i = 1; $i <= 10; $i++) {
+                    for ($i = 1; $i <= $item['productStock']; $i++) {
                         $selected = ($i == $amount) ? "selected" : "";
                         echo "<option value='$i' $selected>$i</option>";
                     }
@@ -147,9 +143,13 @@
                     </div>
                     ";
                 }
-            ?>
+                ?>
+            <a href='agendar.php' class='btn btn-vino mt-5'><i class='bi bi-clipboard'></i>Agendar</a>
         </div>
     </div>
+    <?php
+    }
+    ?>
     <!-- Modal de imagen -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -160,6 +160,3 @@
             </div>
         </div>
     </div>
-<?php
-    }
-?>

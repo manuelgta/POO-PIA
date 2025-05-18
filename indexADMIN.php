@@ -2,6 +2,41 @@
     session_start();
     include 'includes/require_db.php';
     include 'includes/urlRestrictions.php';
+
+    if (isset($_POST['requestId'])) {
+        $_SESSION['soliAdmin'] = $_POST['requestId'];
+        header('location: solicitudesADMIN.php');
+        exit();
+    }
+
+    $stmt = $enlace->prepare("SELECT r.requestId, r.statusId,
+            DATE_FORMAT(r.requestDate, '%d/%m/%Y') AS requestDate,
+            u.userName, s.serviceName, sr.statusName, sr.statusClassName FROM requests r
+            JOIN users u ON u.userId = r.userId
+            JOIN services s ON s.serviceId = r.serviceId
+            JOIN statusrequests sr ON sr.statusId = r.statusId
+            WHERE r.isDeleted = 0
+            ORDER BY r.statusId ASC");
+    $stmt->execute();
+
+    $requests = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    $pending = 0;
+    $process = 0;
+    $completed = 0;
+    foreach ($requests as $request) {
+        switch ($request['statusId']) {
+            case 1:
+                $pending++;
+                break;
+            case 2:
+                $process++;
+                break;
+            case 3:
+                $completed++;
+                break;
+        }
+    }
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -36,7 +71,7 @@
                         <div class="card bg-primary text-white">
                             <div class="card-body">
                                 <h5 class="card-title">Solicitudes Pendientes</h5>
-                                <h2 class="card-text">12</h2>
+                                <h2 class="card-text"><?= $pending ?></h2>
                             </div>
                         </div>
                     </div>
@@ -45,7 +80,7 @@
                         <div class="card bg-warning text-white">
                             <div class="card-body">
                                 <h5 class="card-title">Solicitudes en Proceso</h5>
-                                <h2 class="card-text">5</h2>
+                                <h2 class="card-text"><?= $process ?></h2>
                             </div>
                         </div>
                     </div>
@@ -54,7 +89,7 @@
                         <div class="card bg-success text-white">
                             <div class="card-body">
                                 <h5 class="card-title">Solicitudes Completadas</h5>
-                                <h2 class="card-text">23</h2>
+                                <h2 class="card-text"><?= $completed ?></h2>
                             </div>
                         </div>
                     </div>
@@ -78,7 +113,24 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <?php
+                                        foreach ($requests as $request) {
+                                            echo "
+                                            <tr>
+                                                <td>#{$request['requestId']}</td>
+                                                <td>{$request['userName']}</td>
+                                                <td>{$request['serviceName']}</td>
+                                                <td>{$request['requestDate']}</td>
+                                                <td><span class='badge bg-{$request['statusClassName']}'>{$request['statusName']}</span></td>
+                                                <td>
+                                                    <form method='post'>
+                                                        <button type='submit' class='btn btn-sm btn-vino' name='requestId' value='{$request['requestId']}'>Ver</button>
+                                                    </form>
+                                                </td>
+                                            </tr>";
+                                        }
+                                    ?>
+                                    <!-- <tr>
                                         <td>#1025</td>
                                         <td>Juan Pérez</td>
                                         <td>Instalación</td>
@@ -107,7 +159,7 @@
                                         <td>
                                             <button class="btn btn-sm btn-vino">Ver</button>
                                         </td>
-                                    </tr>
+                                    </tr> -->
                                 </tbody>
                             </table>
                         </div>

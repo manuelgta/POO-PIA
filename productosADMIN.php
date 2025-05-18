@@ -199,7 +199,7 @@
                                 <tbody>
                                     <?php
                                         foreach ($products as $product) {
-                                            if (empty($product['productImgPath']) || is_null($product['productImgPath'])) {
+                                            if (empty($product['productImgPath']) || is_null($product['productImgPath']) || !file_exists($product['productImgPath'])) {
                                                 $product['productImgPath'] = "img/product_placeholder.png";
                                             }
                                             $badgeColor = $product['productStock'] > 0 ? "success" : "danger";

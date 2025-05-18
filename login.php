@@ -41,8 +41,8 @@
                 "role" => $usuario['roleId']
             ];
             unset($_SESSION['urls']);
-            if (isset($_SESSION['login']['serviceRedirect'])) {
-                header('location: servicios.php');
+            if (isset($_SESSION['login']['appointmentRedirect'])) {
+                header('location: agendar.php');
             } else {
                 header('location: index.php');
             }

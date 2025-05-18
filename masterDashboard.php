@@ -118,17 +118,17 @@
             break;
 
         case 'requests':
-            $query = "SELECT r.requestId AS id, r.requestTitle, r.requestComments, r.requestDate, r.requestAddress,
+            $query = "SELECT r.requestId AS id, r.requestComments, r.requestDate, r.requestAddress,
                             DATE_FORMAT(r.createdAt, '%d/%m/%y %H:%i') AS createdAt,
                             DATE_FORMAT(r.updatedAt, '%d/%m/%y %H:%i') AS updatedAt,
                     sr.statusName, sr.statusClassName,
                     s.serviceName,
-                    u.userName
+                    u.userName, ut.userName as tecId
                     FROM requests r
-                    JOIN statusrequests sr ON sr.statusId = r.statusId
-                    JOIN services s ON s.serviceId = r.serviceId
-                    JOIN users u ON u.userId = r.userId
-                    JOIN users ut ON ut.userId = r.tecId
+                    LEFT JOIN statusrequests sr ON sr.statusId = r.statusId
+                    LEFT JOIN users u ON u.userId = r.userId
+                    LEFT JOIN users ut ON ut.userId = r.tecId
+                    LEFT JOIN services s ON s.serviceId = r.serviceId
                     WHERE r.isDeleted = $trash
                     ORDER BY r.requestId DESC";
             break;
@@ -323,7 +323,6 @@
                                                     echo '
                                                     <th>Accion</th>
                                                     <th>#</th>
-                                                    <th>Titulo</th>
                                                     <th>Nombre</th>
                                                     <th>Fecha</th>
                                                     <th>Productos</th>
@@ -510,7 +509,6 @@
                                                     <tr>
                                                         <td>$buttons</td>
                                                         <td $class>{$row['id']}</td>
-                                                        <td>{$row['requestTitle']}</td>
                                                         <td>{$row['userName']}</td>
                                                         <td>{$row['requestDate']}</td>
                                                         <td>
