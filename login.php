@@ -90,6 +90,9 @@
             $_SESSION['success'] = "¡Te has registrado exitosamente! Prueba iniciar sesión."; // Mensaje de exito que aparece en navbar.php
         } catch (Exception $e) {
             $_SESSION['error'] = "Error {$e->getCode()}: {$e->getMessage()}"; // Mensaje de error junto con el codigo
+            if ($e->getCode() == 1062) {
+                $_SESSION['error'] = "El correo ya existe, intenta con otro."; // Mensaje de error si el correo ya existe
+            }
             $enlace->rollback(); // Deshacer cambios hechos en la base de datos en caso de error
         }
     }

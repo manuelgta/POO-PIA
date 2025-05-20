@@ -7,7 +7,7 @@
     if (isset($_POST['requestId'])) {
         $requestId = $_POST['requestId'] ?? NULL;
         $statusId = $_POST['statusId'] ?? NULL;
-        $tecId = $_POST['tecId'] ?? NULL;
+        $tecId = $_SESSION['user']['id'] ?? NULL;
 
         $enlace->begin_transaction(); // Para tratar multiples ejecuciones a la base de datos
 
@@ -72,23 +72,16 @@
 
     $stmt = $enlace->prepare("SELECT r.requestId, r.statusId, r.tecId,
             DATE_FORMAT(r.requestDate, '%d/%m/%Y') AS requestDate,
-            u.userName, t.userName as tecName, s.serviceName, sr.statusName FROM requests r
+            u.userName, s.serviceName, sr.statusName FROM requests r
             JOIN users u ON u.userId = r.userId
-            LEFT JOIN users t ON t.userId = r.tecId
             JOIN services s ON s.serviceId = r.serviceId
             JOIN statusrequests sr ON sr.statusId = r.statusId
-            WHERE r.isDeleted = 0");
+            WHERE r.isDeleted = 0
+            AND tecId = ?");
+    $stmt->bind_param("i", $_SESSION['user']['id']);
     $stmt->execute();
 
     $requests = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
-
-
-    $stmt = $enlace->prepare("SELECT * FROM users
-            WHERE roleId = 3 AND isDeleted = 0");
-    $stmt->execute();
-
-    $users = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
     $stmt = $enlace->prepare("SELECT * FROM statusrequests
             WHERE isDeleted = 0");
@@ -122,7 +115,10 @@
             </nav>
 
             <div class="admin-content p-4">
-                <h2 class="mb-4">Gestión de Solicitudes</h2>
+                <h2 class="mb-4">Mis solicitudes</h2>
+                <?php
+                    if (!empty($requests)) {
+                ?>
                 
                 <div class="card shadow">
                     <div class="card-body">
@@ -135,7 +131,6 @@
                                         <th>Servicio</th>
                                         <th>Producto</th>
                                         <th>Fecha</th>
-                                        <th>Técnico</th>
                                         <th>Estado</th>
                                         <th>Acciones</th>
                                     </tr>
@@ -207,21 +202,6 @@
                                                     </td>
                                                     <td>{$request['requestDate']}</td>
                                                     <td>
-                                                        <select class='form-select form-select-sm' required name='tecId'>
-                                                            <option value=''>-- Elije --";
-                                            if (empty($users)) {
-                                                echo "
-                                                <option value='' disabled>Sin técnicos</options>";
-                                            } else foreach ($users as $user) {
-                                                $selected = "";
-                                                if ($request['tecId'] == $user['userId']) $selected = "selected";
-                                                echo "
-                                                <option value='{$user['userId']}' $selected>{$user['userName']}</option>";
-                                            }
-                                            echo "
-                                                        </select>
-                                                    </td>
-                                                    <td>
                                                         <select class='form-select form-select-sm' required name='statusId'>";
                                             foreach ($statuses as $status) {
                                                 $selected = "";
@@ -244,6 +224,12 @@
                         </div>
                     </div>
                 </div>
+
+                <?php
+                    } else {
+                        echo "<div class='alert alert-info'>No tienes solicitudes registradas.</div>";
+                    }
+                ?>
             </div>
         </div>
     </div>

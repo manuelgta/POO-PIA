@@ -19,7 +19,7 @@
 
     function returnRows($page, $id, $enlace, $config = []) {
 
-        $whitelist = ["users", "urls", "urlRoles", "products", "services"]; // Lista blanca
+        $whitelist = ["users", "urls", "urlRoles", "products", "services", "icons"]; // Lista blanca
 
         if (in_array($page, $whitelist, true)) {
 

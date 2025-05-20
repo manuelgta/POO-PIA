@@ -331,6 +331,7 @@
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $url = basename($_SERVER['PHP_SELF']);
+        unset($_SESSION['urls']);
         header("location: $url");
         exit();
     }
