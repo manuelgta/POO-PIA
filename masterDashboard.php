@@ -31,8 +31,11 @@
             }
 
             $column = "{$tableSLess}Name";
-            if ($table == 'urls' || $table == 'requests') {
+            if ($table == 'urls') {
                 $column = "{$tableSLess}Title";
+            }
+            if ($table == 'requests') {
+                $column = "{$tableSLess}Date";
             }
             if ($table == 'icons') {
                 $column = "{$tableSLess}Bi";
@@ -353,7 +356,6 @@
                                         foreach ($pageData as $row) {
                                             $id = $row['id'];
                                             $buttons = "
-                                            <button class='btn btn-warning set' data-id='$id'><i class='bi bi-pencil-square'></i></button>
                                             <button class='btn btn-danger delete' data-id='$id'><i class='bi bi-trash'></i></button>";
                                             if ($trash == 1) {
                                                 $buttons = "
